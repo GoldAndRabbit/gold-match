@@ -19,17 +19,18 @@ def timestamp2time(x):
 def generate_train_test_pkl():
     INPUT_PATH = '/media/psdz/hdd/Download/ali_behavoir/'
     OUTPUT_PATH = '/media/psdz/hdd/Download/ali_behavoir/sample_data/'
-    train_pkl_file = Path(OUTPUT_PATH + 'train.csv')
-    test_pkl_file = Path(OUTPUT_PATH + 'train.csv')
+    train_pkl_file = Path(OUTPUT_PATH + 'train.pkl')
+    test_pkl_file = Path(OUTPUT_PATH + 'train.pkl')
 
     if train_pkl_file.is_file() and test_pkl_file.is_file():
-        print('train and test pkl files are exit')
+        print('train and test pkl files are exit.')
         df_train = pickle.load(open(OUTPUT_PATH + 'train.pkl', 'rb'))
         df_test = pickle.load(open(OUTPUT_PATH + 'test.pkl', 'rb'))
     else:
-        cols = ['user_id','item_id','cate_id','type','timestamp']
-        used_cols = ['user_id','item_id','type','timestamp']
-        df_total = pd.read_csv(INPUT_PATH + 'UserBehavior.csv',names=cols)
+        print('train and test pkl files are not exit. start dump...')
+        cols = ['user_id', 'item_id', 'cate_id', 'type', 'timestamp']
+        used_cols = ['user_id', 'item_id', 'type', 'timestamp']
+        df_total = pd.read_csv(INPUT_PATH + 'UserBehavior.csv', names=cols)
         df_total = df_total[used_cols]
         # df_total = df_total.head(100)
         df_total['date'] = df_total['timestamp'].apply(timestamp2date)
