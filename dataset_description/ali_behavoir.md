@@ -1,4 +1,4 @@
-## alibaba user behavoir dataset
+## alibaba user behavior dataset
 UserBehavior是阿里巴巴提供的一个淘宝用户行为数据集，用于隐式反馈推荐问题的研究。
 
 时间: 2017年11月25日-2017年12月3日.

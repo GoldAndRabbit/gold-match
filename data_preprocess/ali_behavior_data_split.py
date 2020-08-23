@@ -17,8 +17,8 @@ def timestamp2time(x):
     return dt
 
 def generate_train_test_pkl():
-    INPUT_PATH = '/media/psdz/hdd/Download/ali_behavoir/'
-    OUTPUT_PATH = '/media/psdz/hdd/Download/ali_behavoir/sample_data/'
+    INPUT_PATH = '/media/psdz/hdd/Download/ali_behavior/'
+    OUTPUT_PATH = '/media/psdz/hdd/Download/ali_behavior/sample_data/'
     train_pkl_file = Path(OUTPUT_PATH + 'train.pkl')
     test_pkl_file = Path(OUTPUT_PATH + 'train.pkl')
 
