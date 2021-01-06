@@ -41,6 +41,7 @@ def swing(df, user_col='user_id', item_col='item_id', time_col='time'):
                     continue
                 weight = 1.0  # np.exp(-15000*(i_time_diff + j_time_diff))
                 sim_item[i][j] = sim_item[i].setdefault(j, 0.) + weight / (alpha + num_co_items)
+
     # 4. norm by item count
     sim_item_corr = sim_item.copy()
     for i, related_items in sim_item.items():
