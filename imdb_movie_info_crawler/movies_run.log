@@ -1,0 +1,16 @@
+2021-01-31 22:03:37 root:INFO:init model finished...
+2021-01-31 22:03:37 root:INFO:start get_white_lst...
+2021-01-31 22:03:37 root:INFO:get_white_lst finished...
+2021-01-31 22:03:37 root:INFO:start get_movie_id...
+2021-01-31 22:03:37 root:INFO:get_movie_id finished...
+2021-01-31 22:03:38 root:INFO:get https://www.imdb.com/title/tt0113107
+2021-01-31 22:03:45 root:INFO:get https://www.imdb.com/title/tt0113107 success
+2021-01-31 22:03:46 root:INFO:get https://m.media-amazon.com/images/M/MV5BN2I4YjdhZTQtNTBkYi00Mjk0LTkxZjEtZTQ2YTA2YzI3NmM4XkEyXkFqcGdeQXVyNjMwMjk0MTQ@._V1_UX182_CR0,0,182,268_AL_.jpg
+2021-01-31 22:03:49 root:INFO:get https://m.media-amazon.com/images/M/MV5BN2I4YjdhZTQtNTBkYi00Mjk0LTkxZjEtZTQ2YTA2YzI3NmM4XkEyXkFqcGdeQXVyNjMwMjk0MTQ@._V1_UX182_CR0,0,182,268_AL_.jpg success
+2021-01-31 22:03:49 root:INFO:process movie 131 success
+2021-01-31 22:03:50 root:INFO:get https://www.imdb.com/title/tt0114015
+2021-01-31 22:03:54 root:INFO:get https://www.imdb.com/title/tt0114015 success
+2021-01-31 22:03:54 root:INFO:get https://m.media-amazon.com/images/M/MV5BNzc2YmU3MmMtNGJlZS00ODMxLTg2N2EtYzdiMDc2YzY4ZTdlXkEyXkFqcGdeQXVyODU4MjAxOQ@@._V1_UY268_CR0,0,182,268_AL_.jpg
+2021-01-31 22:03:54 root:INFO:get https://m.media-amazon.com/images/M/MV5BNzc2YmU3MmMtNGJlZS00ODMxLTg2N2EtYzdiMDc2YzY4ZTdlXkEyXkFqcGdeQXVyODU4MjAxOQ@@._V1_UY268_CR0,0,182,268_AL_.jpg success
+2021-01-31 22:03:54 root:INFO:process movie 133 success
+2021-01-31 22:03:55 root:INFO:get https://www.imdb.com/title/tt0114500
