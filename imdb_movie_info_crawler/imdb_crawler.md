@@ -1,5 +1,5 @@
 > ## imdb crawler
-* get movie info and posters from imdb 
+* get movie info and posters from imdb.
 
 
 > ## Reference

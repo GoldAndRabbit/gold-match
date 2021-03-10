@@ -1,12 +1,14 @@
+import os
 import requests
-from bs4 import BeautifulSoup
 import unicodedata
 import logging
 import csv
 import time
 import pandas as pd
+from bs4 import BeautifulSoup
 
 ROOT_PATH          = '/media/psdz/hdd/Download/movielens/ml-25m/'
+PROJECT_ROOT_PATH  = '/home/psdz/repos/gold-match/imdb_movie_info_crawler/'
 links_path         = ROOT_PATH + 'links.csv'
 genome_scores_path = ROOT_PATH + 'genome-scores.csv'
 genome_tags_path   = ROOT_PATH + 'genome-tags.csv'
@@ -18,34 +20,27 @@ links = pd.read_csv(links_path)
 
 class Model:
     def __init__(self):
-        # 请求头
         self.headers = {
             'User-Agent': 'Mozilla/5.o (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'
-        }
-        # 存放每一部电影的id和imdb的id
-        self.movie_dct = {}
-        # 存放已经处理完的movie id
-        self.white_lst = []
-        # 电影详情的初始url
-        self.url = 'https://www.imdb.com/title/'
+        }                                               # 请求头
+        self.movie_dct = {}                             # 存放每一部电影的id和imdb的id
+        self.white_lst = []                             # 存放已经处理完的movie id
+        self.url = 'https://www.imdb.com/title/'        # 电影详情的初始url
         self.movie_csv_path   = links_path
-        # 海报的保存路径
         # self.poster_save_path = './poster'
-        self.poster_save_path = './download_posters'
-        # 电影信息的保存文件
+        self.poster_save_path = './download_posters'    # 海报的保存路径
         # self.info_save_path = './info/info.csv'
-        self.info_save_path = './infos/info.csv'
-        # logging的配置，记录运行日志
-        logging.basicConfig(
+        self.info_save_path = './infos/info.csv'        # 电影信息的保存文件
+        logging.basicConfig(                            # logging的配置，记录运行日志
             # no file receiving
             # filename="run.log",
             # filename="movies_run.log",
             filemode="a+",
             format="%(asctime)s %(name)s:%(levelname)s:%(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
-            level=logging.INFO)
-        # 表示当前处理的电影
-        self.cur_movie_id = None
+            level=logging.INFO
+        )
+        self.cur_movie_id = None                        # 表示当前处理的电影
         self.cur_imdb_id  = None
         logging.info('init model finished...')
 
@@ -72,7 +67,7 @@ class Model:
 
     def update_white_lst(self, movie_id):
         '''更新白名单'''
-        with open('white_list', 'a+') as fb:
+        with open('new_white_list', 'a+') as fb:
             fb.write(movie_id + '\n')
 
     def update_black_lst(self, movie_id, msg=''):
@@ -136,31 +131,46 @@ class Model:
         for tag in soup.find(class_='subtext').find_all('a'):
             info.append(tag.get_text().strip())
         # 简介
-        intro = soup.find(class_='summary_text').get_text().strip()
-        intro = unicodedata.normalize('NFKC', intro)
-        # 卡司。D W S C，分别表示 导演，编剧，明星，导演
-        case_dict = {'D': [], 'W': [], 'S': [], 'C': []}
-        for i, tags in enumerate(soup.find_all(class_='credit_summary_item')):
-            for h4 in tags.find_all('h4'):
-                title = h4.get_text()
-                ch = title[0]
-                for _, a in enumerate(h4.next_siblings):
-                    if a.name == 'a':
-                        case_dict[ch].append(a.get_text())
+        # intro = soup.find(class_='summary_text').get_text().strip()
+        # 这里有个报错: 'NoneType' object has no attribute 'get_text', 暂时先忽略
+        intro_summary = soup.find(class_='summary_text')
+        if intro_summary is not None:
+            intro = intro_summary.get_text().strip()
+            intro = unicodedata.normalize('NFKC', intro)
+            # 卡司。D W S C，分别表示 导演，编剧，明星，导演
+            case_dict = {'D': [], 'W': [], 'S': [], 'C': []}
+            for i, tags in enumerate(soup.find_all(class_='credit_summary_item')):
+                for h4 in tags.find_all('h4'):
+                    title = h4.get_text()
+                    ch = title[0]
+                    for _, a in enumerate(h4.next_siblings):
+                        if a.name == 'a':
+                            case_dict[ch].append(a.get_text())
 
-        for k, v in case_dict.items():
-            # 去掉多余的信息，只保留关键人名。
-            # 例如Pete Docter (original story by) | 6 more credits »。我们不需要|后面的字符
-            if v and (v[-1].find('credit') != -1 or v[-1].find('full cast') != -1):
-                case_dict[k] = case_dict[k][:-1]
+            for k, v in case_dict.items():
+                # 去掉多余的信息，只保留关键人名。
+                # 例如Pete Docter (original story by) | 6 more credits »。我们不需要|后面的字符
+                if v and (v[-1].find('credit') != -1 or v[-1].find('full cast') != -1):
+                    case_dict[k] = case_dict[k][:-1]
 
-        # 有时候导演名会用Creator代替
-        if 'C' in case_dict.keys():
-            case_dict['D'].extend(case_dict['C'])
-        # id，电影名称，海报链接，时长，类型，发行时间，简介，导演，编剧，演员
-        detail = [self.cur_movie_id, name, poster_url, info[0], '|'.join(info[1:-1]),
-                  info[-1], intro,
-                  '|'.join(case_dict['D']), '|'.join(case_dict['W']), '|'.join(case_dict['S'])]
+            # 有时候导演名会用Creator代替
+            if 'C' in case_dict.keys():
+                case_dict['D'].extend(case_dict['C'])
+            # id，电影名称，海报链接，时长，类型，发行时间，简介，导演，编剧，演员
+            detail = [
+                self.cur_movie_id,
+                name,
+                poster_url,
+                info[0],
+                '|'.join(info[1:-1]),
+                info[-1],
+                intro,
+                '|'.join(case_dict['D']),
+                '|'.join(case_dict['W']),
+                '|'.join(case_dict['S'])
+            ]
+        else:
+            detail = []
         self.save_info(detail)
 
     def save_poster(self, movie_id, content):
@@ -185,7 +195,7 @@ class Model:
             self.cur_imdb_id  = imdb_id
             # 休眠，防止被封IP，大概3秒处理完一部电影的信息，如果注释掉，会减少大约2.5小时的运行时间
             # IMDB好像没有反爬机制，可以放心的注释掉
-            time.sleep(1)
+            # time.sleep(1)
             response = self.get_url_response(self.url + 'tt' + self.cur_imdb_id)
             # 找不到电影详情页的url，或者超时，则仅仅保留id，之后再用另一个脚本处理
             if response is None:
@@ -203,12 +213,30 @@ class Model:
             logging.info(f'process movie {self.cur_movie_id} success')
 
 
+def get_white_from_download_posters(append=False):
+    new_white_movies = []
+    for moive_id_jpg in os.listdir(PROJECT_ROOT_PATH + 'download_posters'):
+        movie_id = int(moive_id_jpg.replace(".jpg", ""))
+        new_white_movies.append(movie_id)
+    new_white_movies = sorted(new_white_movies)
+    mode = 'w' if append is False else 'a+'
+    print('get white from download mode:' + mode)
+    with open(PROJECT_ROOT_PATH + 'new_white_list', mode) as fb:
+        for movie_id in new_white_movies:
+            fb.write(str(movie_id) + '\n')
+    return new_white_movies
+
+
 if __name__ == '__main__':
+    get_white_from_download_posters(append=False)
     s = Model()
-    s.get_movie_id()
-    s.get_white_lst()
-    movie_dct = s.movie_dct
-    white_lst = s.white_lst
-    # s.run()
-    for movie_id, imdb_id in movie_dct.items():
-        print(movie_id, imdb_id)
+    # s.get_movie_id()
+    # s.get_white_lst()
+    # movie_dct = s.movie_dct
+    # white_lst = s.white_lst
+    # for movie_id, imdb_id in movie_dct.items():
+    #     print('movie_id:' + movie_id + ' imdb_id:' + imdb_id)
+    # print("total_movie_id_count:" + str(len(movie_dct.items())))
+    # print("total_white_cnt:" + str(len(white_lst)))
+
+    s.run()
