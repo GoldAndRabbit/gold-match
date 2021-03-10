@@ -28,7 +28,7 @@ class Model:
         self.url = 'https://www.imdb.com/title/'        # 电影详情的初始url
         self.movie_csv_path   = links_path
         # self.poster_save_path = './poster'
-        self.poster_save_path = './download_posters'    # 海报的保存路径
+        self.poster_save_path = ROOT_PATH + 'download_posters'    # 海报的保存路径
         # self.info_save_path = './info/info.csv'
         self.info_save_path = './infos/info.csv'        # 电影信息的保存文件
         logging.basicConfig(                            # logging的配置，记录运行日志
@@ -215,7 +215,7 @@ class Model:
 
 def get_white_from_download_posters(append=False):
     new_white_movies = []
-    for moive_id_jpg in os.listdir(PROJECT_ROOT_PATH + 'download_posters'):
+    for moive_id_jpg in os.listdir(ROOT_PATH + 'download_posters'):
         movie_id = int(moive_id_jpg.replace(".jpg", ""))
         new_white_movies.append(movie_id)
     new_white_movies = sorted(new_white_movies)
@@ -239,4 +239,5 @@ if __name__ == '__main__':
     # print("total_movie_id_count:" + str(len(movie_dct.items())))
     # print("total_white_cnt:" + str(len(white_lst)))
 
-    s.run()
+    # use followed function to start
+    # s.run()
